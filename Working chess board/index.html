@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chess with Themes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --light-square: #f0d9b5;
+            --dark-square: #b58863;
+            --white-piece: #ffffff;
+            --black-piece: #000000;
+            --bg-color: #2c2c2c;
+        }
+
+        body {
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            transition: background 0.3s;
+        }
+
+        .game-container {
+            display: flex;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .chessboard {
+            border: 2px solid #666;
+            display: inline-block;
+            background: var(--dark-square);
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .row {
+            display: flex;
+        }
+
+        .square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--light-square);
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .square.dark {
+            background-color: var(--dark-square);
+        }
+
+        .piece {
+            font-size: 40px;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.2s;
+        }
+
+        .white {
+            color: var(--white-piece);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .black {
+            color: var(--black-piece);
+            text-shadow: 1px 1px 3px rgba(21, 142, 91, 0.5);
+        }
+
+        .selected {
+            background: #7a9f7a !important;
+        }
+
+        .valid-move::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(100, 200, 100, 0.5);
+            border-radius: 50%;
+        }
+
+        .theme-selector {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .theme-option {
+            width: 100px;
+            height: 60px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .theme-option:hover {
+            transform: scale(1.05);
+        }
+
+        .theme-option.active {
+            border-color: #fff;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .status {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div>
+            <div class="status" id="status">White's turn</div>
+            <div class="chessboard" id="chessboard"></div>
+        </div>
+        <div class="theme-selector">
+            <div class="theme-option active" style="background: linear-gradient(45deg, #f0d9b5, #b58863)" data-theme="classic"></div>
+            <div class="theme-option" style="background: linear-gradient(45deg, #2c2c2c, #d4af37)" data-theme="midnight"></div>
+            <div class="theme-option" style="background: linear-gradient(45deg, #4a148c, #ffd700)" data-theme="royal"></div>
+            <div class="theme-option" style="background: linear-gradient(45deg, #1a237e, #00bcd4)" data-theme="ocean"></div>
+            <div class="theme-option" style="background: linear-gradient(45deg, #b71c1c, #212121)" data-theme="crimson"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.js"></script>
+    <script>
+        class ChessGame {
+            constructor() {
+                this.game = new Chess();
+                this.selectedSquare = null;
+                this.themes = {
+                    classic: {
+                        light: '#f0d9b5',
+                        dark: '#b58863',
+                        white: '#ffffff',
+                        black: '#000000',
+                        bg: '#2c2c2c'
+                    },
+                    midnight: {
+                        light: '#2c2c2c',
+                        dark: '#d4af37',
+                        white: '#d4af37',
+                        black: '#2c2c2c',
+                        bg: '#1a1a1a'
+                    },
+                    royal: {
+                        light: '#4a148c',
+                        dark: '#ffd700',
+                        white: '#ffd700',
+                        black: '#4a148c',
+                        bg: '#2a004f'
+                    },
+                    ocean: {
+                        light: '#1a237e',
+                        dark: '#00bcd4',
+                        white: '#00bcd4',
+                        black: '#1a237e',
+                        bg: '#001064'
+                    },
+                    crimson: {
+                        light: '#b71c1c',
+                        dark: '#212121',
+                        white: '#ffffff',
+                        black: '#212121',
+                        bg: '#450a0a'
+                    }
+                };
+                this.init();
+            }
+
+            init() {
+                this.setTheme('classic');
+                this.addEventListeners();
+                this.updateBoard();
+            }
+
+            setTheme(themeName) {
+                const theme = this.themes[themeName];
+                document.documentElement.style.setProperty('--light-square', theme.light);
+                document.documentElement.style.setProperty('--dark-square', theme.dark);
+                document.documentElement.style.setProperty('--white-piece', theme.white);
+                document.documentElement.style.setProperty('--black-piece', theme.black);
+                document.documentElement.style.setProperty('--bg-color', theme.bg);
+            }
+
+            addEventListeners() {
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        document.querySelector('.theme-option.active').classList.remove('active');
+                        option.classList.add('active');
+                        this.setTheme(option.dataset.theme);
+                    });
+                });
+            }
+
+            updateBoard() {
+                const chessboard = document.getElementById('chessboard');
+                chessboard.innerHTML = '';
+
+                for (let row = 0; row < 8; row++) {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'row';
+                    
+                    for (let col = 0; col < 8; col++) {
+                        const square = document.createElement('div');
+                        square.className = `square ${(row + col) % 2 === 0 ? 'dark' : ''}`;
+                        square.dataset.position = this.getSquareName(row, col);
+                        
+                        const piece = this.game.get(this.getSquareName(row, col));
+                        if (piece) {
+                            const pieceSpan = document.createElement('span');
+                            pieceSpan.className = `piece ${piece.color}`;
+                            pieceSpan.textContent = this.getPieceSymbol(piece);
+                            square.appendChild(pieceSpan);
+                        }
+
+                        square.addEventListener('click', (e) => this.handleSquareClick(e));
+                        rowDiv.appendChild(square);
+                    }
+                    chessboard.appendChild(rowDiv);
+                }
+
+                document.getElementById('status').textContent = this.getStatusText();
+            }
+
+            getSquareName(row, col) {
+                const letters = 'abcdefgh';
+                return letters[col] + (8 - row);
+            }
+
+            getPieceSymbol(piece) {
+                const symbols = {
+                    'p': '♟', 'n': '♞', 'b': '♝', 'r': '♜', 'q': '♛', 'k': '♚',
+                    'P': '♙', 'N': '♘', 'B': '♗', 'R': '♖', 'Q': '♕', 'K': '♔'
+                };
+                return symbols[piece.type] || '';
+            }
+
+            handleSquareClick(event) {
+                const square = event.currentTarget;
+                const position = square.dataset.position;
+                const piece = this.game.get(position);
+
+                // Clear previous selections
+                document.querySelectorAll('.selected, .valid-move').forEach(el => {
+                    el.classList.remove('selected', 'valid-move');
+                });
+
+                if (this.selectedSquare) {
+                    // Try to make move
+                    const move = this.game.move({
+                        from: this.selectedSquare,
+                        to: position,
+                        promotion: 'q'
+                    });
+
+                    if (move) {
+                        this.selectedSquare = null;
+                        this.updateBoard();
+                        return;
+                    }
+                }
+
+                if (piece && piece.color === this.game.turn()) {
+                    this.selectedSquare = position;
+                    square.classList.add('selected');
+                    this.showValidMoves(position);
+                }
+            }
+
+            showValidMoves(from) {
+                const moves = this.game.moves({ square: from, verbose: true });
+                moves.forEach(move => {
+                    const square = document.querySelector(`[data-position="${move.to}"]`);
+                    if (square) square.classList.add('valid-move');
+                });
+            }
+
+            getStatusText() {
+                if (this.game.in_checkmate()) {
+                    return `${this.game.turn() === 'w' ? 'Black' : 'White'} wins by checkmate!`;
+                }
+                if (this.game.in_draw()) {
+                    return 'Game drawn!';
+                }
+                return `${this.game.turn() === 'w' ? 'White' : 'Black'}'s turn`;
+            }
+        }
+
+        // Initialize game
+        const chessGame = new ChessGame();
+    </script>
+</body>
+</html>
