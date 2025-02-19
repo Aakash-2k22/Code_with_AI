@@ -1,0 +1,159 @@
+/* Default Theme */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.calculator {
+    width: 300px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.theme-selector {
+    margin-bottom: 10px;
+    text-align: right;
+}
+
+.display {
+    background-color: #e0e0e0;
+    padding: 10px;
+    text-align: right;
+    font-size: 2em;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    height: 50px;
+    overflow: hidden;
+}
+
+.buttons button {
+    width: 25%;
+    padding: 20px;
+    font-size: 1.5em;
+    border: none;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    transition: background-color 0.3s;
+}
+
+.buttons button:hover {
+    background-color: #ddd;
+}
+
+.buttons button.zero {
+    width: 50%;
+}
+
+.buttons button.equal {
+    background-color: #4caf50;
+    color: white;
+}
+
+.buttons button.operator {
+    background-color: #ff9500;
+    color: white;
+}
+
+/* Dark Theme */
+body.dark {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark .calculator {
+    background-color: #444;
+}
+
+body.dark .display {
+    background-color: #555;
+    color: #fff;
+}
+
+body.dark .buttons button {
+    background-color: #666;
+    color: #fff;
+}
+
+body.dark .buttons button:hover {
+    background-color: #777;
+}
+
+body.dark .buttons button.equal {
+    background-color: #4caf50;
+}
+
+body.dark .buttons button.operator {
+    background-color: #ff9500;
+}
+
+/* Light Theme */
+body.light {
+    background-color: #fff;
+    color: #333;
+}
+
+body.light .calculator {
+    background-color: #f9f9f9;
+}
+
+body.light .display {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+body.light .buttons button {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+body.light .buttons button:hover {
+    background-color: #ddd;
+}
+
+body.light .buttons button.equal {
+    background-color: #4caf50;
+}
+
+body.light .buttons button.operator {
+    background-color: #ff9500;
+}
+
+/* Colorful Theme */
+body.colorful {
+    background-color: #ffcccb;
+    color: #333;
+}
+
+body.colorful .calculator {
+    background-color: #ffe4e1;
+}
+
+body.colorful .display {
+    background-color: #ffb6c1;
+    color: #fff;
+}
+
+body.colorful .buttons button {
+    background-color: #ff69b4;
+    color: #fff;
+}
+
+body.colorful .buttons button:hover {
+    background-color: #ff1493;
+}
+
+body.colorful .buttons button.equal {
+    background-color: #ff4500;
+}
+
+body.colorful .buttons button.operator {
+    background-color: #8a2be2;
+}
